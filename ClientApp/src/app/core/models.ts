@@ -85,3 +85,9 @@ export interface AuthMe {
   preferredUsername: string | null;
   roles: string[];
 }
+
+export interface User {
+  id: string;
+  email: string | null;
+  userName: string | null;
+}

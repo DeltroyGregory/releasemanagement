@@ -1,4 +1,4 @@
-namespace mbm.DTOs;
+namespace rmp.DTOs;
 
 public record AppVersionDto(int Id, string SystemName, string VersionLabel, DateTime CreatedAt);
 

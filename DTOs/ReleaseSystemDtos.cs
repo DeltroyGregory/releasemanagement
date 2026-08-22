@@ -1,4 +1,4 @@
-namespace mbm.DTOs;
+namespace rmp.DTOs;
 
 public record ReleaseSystemDto(int Id, int ReleaseId, string SystemName, string? Notes);
 

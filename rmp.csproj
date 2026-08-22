@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>mbm</RootNamespace>
-    <AssemblyName>mbm</AssemblyName>
+    <RootNamespace>rmp</RootNamespace>
+    <AssemblyName>rmp</AssemblyName>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>mbm-local-dev</UserSecretsId>
+    <UserSecretsId>rmp-local-dev</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

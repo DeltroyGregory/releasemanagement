@@ -1,4 +1,4 @@
-namespace mbm.DTOs;
+namespace rmp.DTOs;
 
 public record CommentDto(int Id, int ReleaseId, string AuthorUserId, string Body, DateTime CreatedAt);
 

@@ -1,11 +1,11 @@
-using mbm.Data;
-using mbm.DTOs;
-using mbm.Models;
+using rmp.Data;
+using rmp.DTOs;
+using rmp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace mbm.Controllers;
+namespace rmp.Controllers;
 
 [ApiController]
 [Route("api/app-versions")]

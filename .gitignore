@@ -22,3 +22,12 @@ appsettings.*.local.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Terraform (.terraform.lock.hcl IS committed — everything else is local/runtime state)
+.devops/terraform/.terraform/
+.devops/terraform/*.tfstate
+.devops/terraform/*.tfstate.*
+.devops/terraform/tfplan
+.devops/terraform/crash.log
+.devops/terraform/override.tf
+.devops/terraform/override.tf.json

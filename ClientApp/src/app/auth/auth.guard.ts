@@ -1,19 +1,16 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { msalInstance } from './msal.instance';
+import { isDevSignedIn } from './dev-session';
 
 export const authGuard: CanActivateFn = () => {
   if (environment.authMode === 'dev' || !msalInstance) {
-    return true;
+    return isDevSignedIn() ? true : inject(Router).createUrlTree(['/login']);
   }
 
   const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
-  if (account) {
-    return true;
-  }
-
-  msalInstance.loginRedirect();
-  return false;
+  return account ? true : inject(Router).createUrlTree(['/login']);
 };
 
 export const adminGuard: CanActivateFn = () => {

@@ -3,7 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
-namespace mbm.Auth;
+namespace rmp.Auth;
 
 /// <summary>
 /// Authenticates every request as the seeded dev admin. Only ever wired up in Program.cs when
@@ -21,8 +21,8 @@ public class DevAuthHandler(
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, "dev-admin"),
-            new Claim("preferred_username", "admin@mbm.local"),
-            new Claim(ClaimTypes.Email, "admin@mbm.local"),
+            new Claim("preferred_username", "admin@rmp.local"),
+            new Claim(ClaimTypes.Email, "admin@rmp.local"),
             new Claim(ClaimTypes.Role, "Admin"),
         };
         var identity = new ClaimsIdentity(claims, SchemeName);
