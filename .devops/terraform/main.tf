@@ -45,11 +45,21 @@ resource "azurerm_mssql_server" "main" {
   }
 }
 
+# The ARM API can report the SQL logical server as created before it's actually queryable by
+# dependent resources (firewall rules, databases) — a known azurerm-provider race condition. A
+# short forced delay avoids needing to manually retry `terraform apply` when it's hit.
+resource "time_sleep" "wait_for_sql_server" {
+  depends_on      = [azurerm_mssql_server.main]
+  create_duration = "60s"
+}
+
 resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
   name             = "AllowAzureServices"
   server_id        = azurerm_mssql_server.main.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
+
+  depends_on = [time_sleep.wait_for_sql_server]
 }
 
 resource "azurerm_mssql_database" "main" {
@@ -57,6 +67,8 @@ resource "azurerm_mssql_database" "main" {
   server_id   = azurerm_mssql_server.main.id
   sku_name    = "Basic"
   max_size_gb = 2
+
+  depends_on = [time_sleep.wait_for_sql_server]
 }
 
 resource "azurerm_key_vault" "main" {
