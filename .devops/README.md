@@ -8,7 +8,7 @@ Azure infrastructure (Terraform) and the deploy pipeline for RMP's `dev` environ
 
 The pipeline is two separate GitHub Actions workflows (not Azure Pipelines, despite the folder name — chosen because the repo already lives on GitHub), decoupled so either can be re-run independently:
 
-- **`.github/workflows/terraform-dev.yml`** — `terraform plan` on pull requests touching `terraform/**`, `terraform apply` on push to `development` (or manual `workflow_dispatch`).
+- **`.github/workflows/terraform-dev.yml`** — `terraform plan` + `apply`, **manual only** (`workflow_dispatch` from the Actions tab). Not triggered by push or pull_request — infra changes are applied deliberately, not automatically.
 - **`.github/workflows/deploy-app-dev.yml`** — builds and deploys the app. Fully independent of `terraform-dev.yml`: triggers on every push to `development` (or manual `workflow_dispatch`) regardless of Terraform's state, rather than waiting on it — if infra isn't up yet this will just fail at the SQL/App Service steps, and you re-run it once `terraform-dev` has succeeded. Since it has no way to read another workflow's outputs, it uses the same resource names already in `terraform/dev.tfvars` (`RESOURCE_GROUP_NAME`/`APP_SERVICE_NAME`/`SQL_SERVER_NAME`/`SQL_DATABASE_NAME`, hardcoded at the top of the file) instead of Terraform outputs — they're deterministic chosen names, not values generated at apply time, so this is safe as long as the two stay in sync if you ever rename something.
 
 ## Prerequisites before the pipeline will run

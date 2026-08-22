@@ -1,16 +1,8 @@
 name: Terraform (dev)
 
+# Manual only — run from the Actions tab when you're ready to plan/apply. Not triggered by push
+# or pull_request; the person running this decides when Terraform touches Azure.
 on:
-  push:
-    branches: [development]
-    paths:
-      - '.devops/terraform/**'
-      - '.github/workflows/terraform-dev.yml'
-  pull_request:
-    branches: [development]
-    paths:
-      - '.devops/terraform/**'
-      - '.github/workflows/terraform-dev.yml'
   workflow_dispatch: {}
 
 permissions:
@@ -68,13 +60,10 @@ jobs:
             -var="subscription_id=${{ vars.AZURE_SUBSCRIPTION_ID }}" \
             -out=tfplan
 
-      # Only applies on push to development — pull requests get a plan only, as a review check.
       - name: Terraform apply
-        if: (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event_name == 'workflow_dispatch'
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform apply -auto-approve tfplan
 
       - name: Show outputs
-        if: (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event_name == 'workflow_dispatch'
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform output
