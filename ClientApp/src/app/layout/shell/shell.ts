@@ -1,0 +1,15 @@
+import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+@Component({
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  selector: 'app-shell',
+  styleUrl: './shell.css',
+  templateUrl: './shell.html',
+})
+export class Shell {
+  protected readonly navItems = [
+    { label: 'My Releases', path: 'my-releases' },
+    { label: 'Releases', path: 'releases' },
+  ];
+}

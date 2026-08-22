@@ -1,0 +1,98 @@
+@if (release(); as r) {
+  <div class="page-header">
+    <h1>{{ r.name }}</h1>
+    <a class="btn btn-secondary" [routerLink]="['/releases', r.id, 'edit']">Edit</a>
+  </div>
+
+  <div class="detail-meta">
+    <span class="badge">{{ r.releaseType }}</span>
+    <span class="badge">{{ r.status }}</span>
+    @if (r.targetDate) {
+      <span>Target: {{ r.targetDate | date: 'mediumDate' }}</span>
+    }
+    <span>Created {{ r.createdAt | date: 'mediumDate' }}</span>
+  </div>
+
+  @if (r.description) {
+    <p>{{ r.description }}</p>
+  }
+
+  <div class="detail-grid">
+    <div>
+      <div class="card">
+        <div class="page-header">
+          <h2 class="section-title">Tasks</h2>
+          <button class="btn" type="button" (click)="showTaskForm.set(true)">+ Add task</button>
+        </div>
+
+        @if (r.tasks.length === 0) {
+          <div class="empty-state">No tasks yet.</div>
+        } @else {
+          @for (task of r.tasks; track task.id) {
+            <div class="task-item">
+              <strong>{{ task.title }}</strong>
+              <span class="badge">{{ task.status }}</span>
+              @if (task.description) {
+                <p>{{ task.description }}</p>
+              }
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2 class="section-title">Fix versions</h2>
+        @if (r.fixVersions.length === 0) {
+          <div class="empty-state">None yet.</div>
+        } @else {
+          @for (fv of r.fixVersions; track fv.id) {
+            <div class="task-item">{{ fv.name }}</div>
+          }
+        }
+      </div>
+
+      <div class="card" style="margin-top: 20px">
+        <h2 class="section-title">Systems</h2>
+        @if (r.releaseSystems.length === 0) {
+          <div class="empty-state">None yet.</div>
+        } @else {
+          @for (rs of r.releaseSystems; track rs.id) {
+            <div class="task-item">{{ rs.systemName }}</div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 20px">
+    <h2 class="section-title">Comments</h2>
+    <form class="stack" style="max-width: none" (ngSubmit)="addComment()">
+      <div class="field">
+        <textarea rows="2" [(ngModel)]="newComment" name="newComment" placeholder="Add a comment…"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn" type="submit" [disabled]="!newComment.trim()">Post</button>
+      </div>
+    </form>
+
+    @if (r.comments.length === 0) {
+      <div class="empty-state">No comments yet.</div>
+    } @else {
+      @for (comment of r.comments; track comment.id) {
+        <div class="comment-item">
+          <div class="detail-meta" style="margin: 0 0 4px">
+            <strong>{{ comment.authorUserId }}</strong>
+            <span>{{ comment.createdAt | date: 'medium' }}</span>
+          </div>
+          <p style="margin: 0">{{ comment.body }}</p>
+        </div>
+      }
+    }
+  </div>
+
+  @if (showTaskForm()) {
+    <app-task-form [releaseId]="r.id" (created)="onTaskCreated()" (closed)="showTaskForm.set(false)" />
+  }
+}

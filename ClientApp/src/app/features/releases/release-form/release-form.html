@@ -1,0 +1,45 @@
+<div class="page-header">
+  <h1>{{ isEdit() ? 'Edit release' : 'New release' }}</h1>
+</div>
+
+<div class="card">
+  <form class="stack" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="name">Name</label>
+      <input id="name" type="text" [(ngModel)]="name" name="name" required />
+    </div>
+
+    <div class="field">
+      <label for="description">Description</label>
+      <textarea id="description" rows="3" [(ngModel)]="description" name="description"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="releaseType">Release type</label>
+      <select id="releaseType" [(ngModel)]="releaseType" name="releaseType">
+        @for (type of releaseTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </div>
+
+    @if (isEdit()) {
+      <div class="field">
+        <label for="status">Status</label>
+        <input id="status" type="text" [(ngModel)]="status" name="status" />
+      </div>
+    }
+
+    <div class="field">
+      <label for="targetDate">Target date</label>
+      <input id="targetDate" type="date" [(ngModel)]="targetDate" name="targetDate" />
+    </div>
+
+    <div class="form-actions">
+      <button class="btn" type="submit" [disabled]="saving() || !name">
+        {{ isEdit() ? 'Save changes' : 'Create release' }}
+      </button>
+      <a class="btn btn-secondary" routerLink="/releases">Cancel</a>
+    </div>
+  </form>
+</div>

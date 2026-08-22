@@ -1,0 +1,33 @@
+<div class="page-header">
+  <h1>{{ title() }}</h1>
+  <a class="btn" routerLink="/releases/new">+ New release</a>
+</div>
+
+<div class="card">
+  @if (releases().length === 0) {
+    <div class="empty-state">No releases yet.</div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Target date</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (release of releases(); track release.id) {
+          <tr>
+            <td><a class="table-link" [routerLink]="['/releases', release.id]">{{ release.name }}</a></td>
+            <td>{{ release.releaseType }}</td>
+            <td><span class="badge">{{ release.status }}</span></td>
+            <td>{{ release.targetDate ? (release.targetDate | date: 'mediumDate') : '—' }}</td>
+            <td>{{ release.createdAt | date: 'mediumDate' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
