@@ -44,6 +44,15 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      # Temporary: these are resource names, not secrets, so safe to print — confirms whether
+      # TF_STATE_* are actually set on the `dev` GitHub Environment before terraform init runs.
+      # Remove once the backend is confirmed working.
+      - name: Debug - show resolved backend vars
+        run: |
+          echo "TF_STATE_RG=[${{ vars.TF_STATE_RG }}]"
+          echo "TF_STATE_STORAGE=[${{ vars.TF_STATE_STORAGE }}]"
+          echo "TF_STATE_CONTAINER=[${{ vars.TF_STATE_CONTAINER }}]"
+
       - name: Terraform init
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: |
