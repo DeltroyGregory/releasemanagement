@@ -6,7 +6,10 @@ Azure infrastructure (Terraform) and the deploy pipeline for RMP's `dev` environ
 - **`terraform/`** — the actual infrastructure: resource group `dg-use-nonprod-rmp-01`, a Linux App Service (`.NET 10`, system-assigned managed identity), an Azure SQL server/database (Microsoft Entra-only auth — no SQL password ever exists), a Key Vault, and Log Analytics + Application Insights. Flat structure on purpose (no modules) — this is a single environment; modules are worth extracting once `prod` exists.
 - **`sql/grant-managed-identity.sql`** — idempotent script the pipeline runs after every `terraform apply`, granting the web app's managed identity access to its own database (AAD auth only, run by the pipeline's own OIDC identity as the SQL AAD admin).
 
-The pipeline itself is `.github/workflows/deploy-dev.yml` (GitHub Actions, not Azure Pipelines, despite the folder name — chosen because the repo already lives on GitHub). It runs `terraform plan` on pull requests touching `terraform/**`, and `terraform apply` + build + deploy on push to `development`.
+The pipeline is two separate GitHub Actions workflows (not Azure Pipelines, despite the folder name — chosen because the repo already lives on GitHub), decoupled so either can be re-run independently:
+
+- **`.github/workflows/terraform-dev.yml`** — `terraform plan` on pull requests touching `terraform/**`, `terraform apply` on push to `development` (or manual `workflow_dispatch`).
+- **`.github/workflows/deploy-app-dev.yml`** — builds and deploys the app. Triggered by `workflow_run` once `terraform-dev` succeeds on `development` (so infra exists first), or manually via `workflow_dispatch` to redeploy just the app without touching infra. Since a `workflow_run`-triggered workflow can't read another workflow's job outputs, it uses the same resource names already in `terraform/dev.tfvars` (`RESOURCE_GROUP_NAME`/`APP_SERVICE_NAME`/`SQL_SERVER_NAME`/`SQL_DATABASE_NAME`, hardcoded at the top of the file) instead of Terraform outputs — they're deterministic chosen names, not values generated at apply time, so this is safe as long as the two stay in sync if you ever rename something.
 
 ## Prerequisites before the pipeline will run
 
