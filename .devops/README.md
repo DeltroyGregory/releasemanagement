@@ -10,7 +10,11 @@ The pipeline itself is `.github/workflows/deploy-dev.yml` (GitHub Actions, not A
 
 ## Prerequisites before the pipeline will run
 
-See [bootstrap/README.md](bootstrap/README.md) for the exact one-time steps: run the bootstrap script, create a GitHub Environment named `dev`, add the repo variables it prints, and fill in `deploy_principal_object_id` in `terraform/dev.tfvars`.
+See [bootstrap/README.md](bootstrap/README.md) for the exact one-time steps: create a GitHub Environment named `dev`, run the bootstrap script, add the values it prints as **variables on that `dev` environment** (not repo-wide), and fill in `deploy_principal_object_id` in `terraform/dev.tfvars`. A `terraform` job failing at the Azure login step with "client-id and tenant-id" missing means one of those steps hasn't been done yet.
+
+## Auth notes
+
+Terraform authenticates to Azure via its own native OIDC support (`use_oidc = true` in `terraform/providers.tf`, fed by `ARM_CLIENT_ID`/`ARM_TENANT_ID`/`ARM_SUBSCRIPTION_ID`/`ARM_USE_OIDC` env vars on the `terraform` job) — **not** by reusing an `azure/login` CLI session. The azurerm provider explicitly refuses to authenticate through an Azure CLI session that was itself established as a service principal (only real interactive-user `az login` sessions work for CLI-based auth), so there's deliberately no `azure/login` step in the `terraform` job. `build-and-deploy` still uses `azure/login` — that's fine, because it runs raw `az` CLI commands directly rather than asking Terraform to borrow the session.
 
 ## Known things to double-check at first apply
 

@@ -22,6 +22,15 @@ jobs:
     name: Terraform plan/apply
     runs-on: ubuntu-latest
     environment: dev
+    # Terraform authenticates itself directly via these (native OIDC support in the azurerm
+    # provider/backend — see providers.tf's use_oidc). It does NOT use azure/login's `az` CLI
+    # session: the azurerm provider explicitly refuses to authenticate through a CLI session that
+    # was itself established as a service principal, so there's no azure/login step in this job.
+    env:
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
     outputs:
       resource_group_name: ${{ steps.tf_outputs.outputs.resource_group_name }}
       app_service_name: ${{ steps.tf_outputs.outputs.app_service_name }}
@@ -30,13 +39,6 @@ jobs:
       sql_database_name: ${{ steps.tf_outputs.outputs.sql_database_name }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - uses: hashicorp/setup-terraform@v3
         with:

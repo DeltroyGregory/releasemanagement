@@ -17,10 +17,12 @@ cd .devops/bootstrap
 
 ## After running it
 
-1. Add the printed values as **repo variables** — Settings → Secrets and variables → Actions → Variables: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `TF_STATE_RG`, `TF_STATE_STORAGE`, `TF_STATE_CONTAINER`. None of these are secret on their own once OIDC trust exists — no client secret is involved.
-2. Create a GitHub **Environment** named `dev` (Settings → Environments) — the federated credential's subject is scoped to it, so the OIDC login step fails without it.
-3. Set `deploy_principal_object_id` in `.devops/terraform/dev.tfvars` to the printed service principal object ID.
+1. Create a GitHub **Environment** named `dev` first (Settings → Environments → New environment) — the federated credential's subject is scoped to it, so the OIDC login step fails without it existing.
+2. Add the printed values as **variables on that `dev` environment** (Settings → Environments → dev → Environment variables — *not* the repo-wide Actions variables page): `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `TF_STATE_RG`, `TF_STATE_STORAGE`, `TF_STATE_CONTAINER`. Scoping them to the environment (rather than repo-wide) keeps them inside the same trust boundary as the federated credential — no unrelated branch/workflow can read them. None of these are secret on their own once OIDC trust exists — no client secret is involved.
+3. Set `deploy_principal_object_id` in `.devops/terraform/dev.tfvars` to the printed service principal object ID, commit, and push.
 4. Push to `development` — the `terraform` job applies the infra, then `build-and-deploy` ships the app to it.
+
+If the `terraform` job's Azure login step fails with `Not all values are present. Ensure 'client-id' and 'tenant-id' are supplied`, it means step 1 or 2 above hasn't been done yet (or the variables were added at the repo level instead of on the `dev` environment) — that's the only thing that error means, nothing in the workflow itself needs to change.
 
 ## Adding `prod` later
 
