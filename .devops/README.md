@@ -5,6 +5,7 @@ Azure infrastructure (Terraform) and the deploy pipeline for RMP's `dev` environ
 - **`bootstrap/`** — one-time setup (Terraform remote state + GitHub Actions OIDC identity). Run this first — see [bootstrap/README.md](bootstrap/README.md). Not run by the pipeline itself.
 - **`terraform/`** — the actual infrastructure: resource group `dg-use-nonprod-rmp-01`, a Linux App Service (`.NET 10`, system-assigned managed identity), an Azure SQL server/database (Microsoft Entra-only auth — no SQL password ever exists), a Key Vault, and Log Analytics + Application Insights. Flat structure on purpose (no modules) — this is a single environment; modules are worth extracting once `prod` exists.
 - **`sql/grant-managed-identity.sql`** — idempotent script the pipeline runs after every `terraform apply`, granting the web app's managed identity access to its own database (AAD auth only, run by the pipeline's own OIDC identity as the SQL AAD admin).
+- **`sql/grant-admin-user.sql`** — idempotent, grants a specific human Entra ID account (currently `dtgregory@gmail.com`, hardcoded in the workflow step) `db_owner` for manual inspection — since the SQL server can only have one AAD admin (the deploy service principal), this is how anyone else gets direct DB access at all.
 
 The pipeline is two separate GitHub Actions workflows (not Azure Pipelines, despite the folder name — chosen because the repo already lives on GitHub), decoupled so either can be re-run independently:
 

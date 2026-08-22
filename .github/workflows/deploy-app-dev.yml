@@ -58,6 +58,13 @@ jobs:
           path: .devops/sql/grant-managed-identity.sql
           arguments: -v WebAppName="${{ env.APP_SERVICE_NAME }}"
 
+      - name: Grant dtgregory@gmail.com db_owner (manual inspection/admin access)
+        uses: azure/sql-action@v2.3
+        with:
+          connection-string: "Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Database=${{ env.SQL_DATABASE_NAME }};Authentication=Active Directory Default;Encrypt=True;"
+          path: .devops/sql/grant-admin-user.sql
+          arguments: -v AdminEmail="dtgregory@gmail.com"
+
       - name: Remove temporary SQL firewall rule
         if: always()
         run: |
