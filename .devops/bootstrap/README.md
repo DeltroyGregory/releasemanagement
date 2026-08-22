@@ -11,9 +11,11 @@ cd .devops/bootstrap
 
 ## What it creates
 
-1. `rg-rmp-tfstate` resource group + a storage account + `tfstate` blob container — Terraform's remote state backend. Can't be created by the same Terraform run that stores its state there, hence the separate script.
+1. A resource group + a storage account + `tfstate` blob container — Terraform's remote state backend. Can't be created by the same Terraform run that stores its state there, hence the separate script.
 2. An Azure AD app registration + service principal for GitHub Actions, with a **federated credential** trusting GitHub's OIDC issuer scoped to this repo's `dev` GitHub *Environment* specifically (not just a branch) — no client secret is ever created or stored.
 3. `Contributor` on the subscription (Terraform creates the `dg-use-nonprod-rmp-01` resource group itself, so it needs subscription-level rights the first time) and `Storage Blob Data Contributor` on the state storage account.
+
+**For the actual `dev` environment, these three things were provisioned by hand in the Portal instead of by running this script** — resource group `dg-use-nonprod-rmp-shared-01`, storage account `dgusenonprodrmpsa01`, container `tfstate`, app registration `releasemgmtport-dev`. The script's defaults match those names so it stays accurate as a reference (and as a template for a future `prod` environment), but running it as-is against `dev` now would fail since the storage account already exists.
 
 ## After running it
 

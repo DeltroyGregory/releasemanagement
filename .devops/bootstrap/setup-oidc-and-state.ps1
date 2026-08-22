@@ -9,6 +9,13 @@
   it is mostly idempotent for the app-registration/RBAC steps, but will fail on the storage
   account step if run twice (by design — it's meant to run once).
 
+  NOTE: for the actual `dev` environment, these resources were provisioned by hand rather than by
+  running this script (state storage account `dgusenonprodrmpsa01` in resource group
+  `dg-use-nonprod-rmp-shared-01`, app registration `releasemgmtport-dev`) — the defaults below
+  match what already exists so this script stays an accurate reference/redo path, not because it
+  was actually run. Re-running it as-is against `dev` would fail (storage account already exists);
+  use it as a template for a future `prod` environment instead (with different parameter values).
+
 .EXAMPLE
   ./setup-oidc-and-state.ps1
 #>
@@ -19,9 +26,10 @@ param(
     [string]$GitHubOrg = "DeltroyGregory",
     [string]$GitHubRepo = "releasemanagement",
     [string]$GitHubEnvironment = "dev",
-    [string]$StateResourceGroup = "rg-rmp-tfstate",
+    [string]$StateResourceGroup = "dg-use-nonprod-rmp-shared-01",
+    [string]$StateStorageAccountName = "dgusenonprodrmpsa01",
     [string]$StateContainerName = "tfstate",
-    [string]$AppRegistrationName = "rmp-github-actions-dev"
+    [string]$AppRegistrationName = "releasemgmtport-dev"
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,7 +39,7 @@ az account set --subscription $SubscriptionId
 
 # --- 1. Terraform remote state storage -------------------------------------------------------
 # Can't be created by the Terraform config that will store its state here (chicken-and-egg).
-$storageAccountName = "strmptfstate" + (Get-Random -Minimum 1000 -Maximum 9999)
+$storageAccountName = $StateStorageAccountName
 
 Write-Host "Creating resource group $StateResourceGroup..."
 az group create --name $StateResourceGroup --location $Location --output none
