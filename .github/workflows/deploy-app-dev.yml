@@ -1,0 +1,105 @@
+name: Deploy app (dev)
+
+on:
+  push:
+    branches: [development]
+  workflow_dispatch: {}
+
+# Independent of terraform-dev.yml — runs on every push to development regardless of Terraform's
+# state. If infra isn't up yet, this will just fail at the SQL/App Service steps; re-run it once
+# terraform-dev has succeeded. The resource names below are hardcoded to match
+# .devops/terraform/dev.tfvars (they're deterministic — chosen names, not generated at apply
+# time) since there's no cross-workflow way to read Terraform outputs here.
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # Keep these in sync with .devops/terraform/dev.tfvars.
+  RESOURCE_GROUP_NAME: dg-use-nonprod-rmp-01
+  APP_SERVICE_NAME: dg-use-nonprod-rmp-app-01
+  SQL_SERVER_NAME: dg-use-nonprod-rmp-sql-01
+  SQL_DATABASE_NAME: dg-use-nonprod-rmp-sqldb-01
+
+jobs:
+  build-and-deploy:
+    name: Build & deploy app
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      # Azure SQL has no public network path from a hosted runner by default. Open a rule for
+      # just this run's IP, do the grant, then close it again.
+      - name: Open temporary SQL firewall rule for this runner
+        run: |
+          RUNNER_IP=$(curl -s https://ifconfig.me)
+          echo "RUNNER_IP=$RUNNER_IP" >> "$GITHUB_ENV"
+          az sql server firewall-rule create \
+            --resource-group "$RESOURCE_GROUP_NAME" \
+            --server "$SQL_SERVER_NAME" \
+            --name "github-actions-runner-temp" \
+            --start-ip-address "$RUNNER_IP" \
+            --end-ip-address "$RUNNER_IP"
+
+      # azure/sql-action doesn't have a `sqlcmd-variables` input (that was silently ignored,
+      # leaving $(WebAppName) unresolved) — pass it through `arguments`, sqlcmd's own -v flag.
+      - name: Grant the web app's managed identity DB access
+        uses: azure/sql-action@v2.3
+        with:
+          connection-string: "Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Database=${{ env.SQL_DATABASE_NAME }};Authentication=Active Directory Default;Encrypt=True;"
+          path: .devops/sql/grant-managed-identity.sql
+          arguments: -v WebAppName="${{ env.APP_SERVICE_NAME }}"
+
+      - name: Remove temporary SQL firewall rule
+        if: always()
+        run: |
+          az sql server firewall-rule delete \
+            --resource-group "$RESOURCE_GROUP_NAME" \
+            --server "$SQL_SERVER_NAME" \
+            --name "github-actions-runner-temp" \
+            --yes || true
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ClientApp/package-lock.json
+
+      - name: Build Angular
+        working-directory: ClientApp
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publish .NET
+        run: dotnet publish rmp.csproj -c Release -o publish
+
+      # Matches CLAUDE.md's documented production build steps: Angular's build output goes into
+      # the published app's wwwroot/, and Program.cs's static-file fallback serves it.
+      - name: Copy Angular build into wwwroot
+        run: |
+          mkdir -p publish/wwwroot
+          cp -r ClientApp/dist/ClientApp/browser/* publish/wwwroot/
+
+      - name: Zip publish output
+        run: (cd publish && zip -r ../app.zip .)
+
+      - name: Deploy to Azure Web App
+        run: |
+          az webapp deploy \
+            --resource-group "$RESOURCE_GROUP_NAME" \
+            --name "$APP_SERVICE_NAME" \
+            --src-path app.zip \
+            --type zip

@@ -38,6 +38,15 @@ resource "azurerm_mssql_server" "main" {
   minimum_tls_version          = "1.2"
   public_network_access_enabled = true
 
+  # Required for CREATE USER ... FROM EXTERNAL PROVIDER to resolve any principal other than the
+  # connecting AAD admin itself (e.g. the web app's managed identity, in the post-apply grant
+  # script) — the server needs its own identity to look principals up in Entra ID. That identity
+  # then needs the Directory Readers role, which Terraform can't grant itself (requires Privileged
+  # Role Administrator / Global Administrator) — see .devops/README.md for the one-time manual step.
+  identity {
+    type = "SystemAssigned"
+  }
+
   azuread_administrator {
     login_username              = var.sql_aad_admin_login
     object_id                   = var.deploy_principal_object_id
@@ -45,11 +54,21 @@ resource "azurerm_mssql_server" "main" {
   }
 }
 
+# The ARM API can report the SQL logical server as created before it's actually queryable by
+# dependent resources (firewall rules, databases) — a known azurerm-provider race condition. A
+# short forced delay avoids needing to manually retry `terraform apply` when it's hit.
+resource "time_sleep" "wait_for_sql_server" {
+  depends_on      = [azurerm_mssql_server.main]
+  create_duration = "60s"
+}
+
 resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
   name             = "AllowAzureServices"
   server_id        = azurerm_mssql_server.main.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
+
+  depends_on = [time_sleep.wait_for_sql_server]
 }
 
 resource "azurerm_mssql_database" "main" {
@@ -57,6 +76,8 @@ resource "azurerm_mssql_database" "main" {
   server_id   = azurerm_mssql_server.main.id
   sku_name    = "Basic"
   max_size_gb = 2
+
+  depends_on = [time_sleep.wait_for_sql_server]
 }
 
 resource "azurerm_key_vault" "main" {

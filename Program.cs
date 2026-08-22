@@ -1,5 +1,6 @@
 using rmp.Auth;
 using rmp.Data;
+using rmp.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services
-    .AddIdentityCore<IdentityUser>()
+    .AddIdentityCore<ApplicationUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
@@ -37,6 +38,7 @@ else
         .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 }
 
+builder.Services.AddTransient<IClaimsTransformation, DbRoleClaimsTransformation>();
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
@@ -73,6 +75,15 @@ using (var scope = app.Services.CreateScope())
     {
         app.Logger.LogError(ex, "Role/user seeding failed");
     }
+
+    try
+    {
+        await SeedPermissions.RunAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Permission seeding failed");
+    }
 }
 
 app.UseHttpsRedirection();
@@ -80,6 +91,7 @@ app.UseHttpsRedirection();
 app.UseCors(ClientDevCors);
 
 app.UseAuthentication();
+app.UseMiddleware<JitUserProvisioning>();
 app.UseAuthorization();
 
 app.MapControllers();

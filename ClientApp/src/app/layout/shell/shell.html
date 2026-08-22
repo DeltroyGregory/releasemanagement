@@ -12,6 +12,10 @@
       @for (item of navItems; track item.path) {
         <a class="nav-item" [routerLink]="item.path" routerLinkActive="active">{{ item.label }}</a>
       }
+      <div class="nav-section-label">Admin</div>
+      @for (item of adminNavItems; track item.path) {
+        <a class="nav-item" [routerLink]="item.path" routerLinkActive="active">{{ item.label }}</a>
+      }
     </nav>
   </aside>
 

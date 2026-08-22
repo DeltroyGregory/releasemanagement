@@ -5,7 +5,7 @@ using rmp.Models;
 
 namespace rmp.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<IdentityUser>(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Release> Releases => Set<Release>();
     public DbSet<TaskItem> TaskItems => Set<TaskItem>();
@@ -13,12 +13,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<AppVersion> AppVersions => Set<AppVersion>();
     public DbSet<FixVersion> FixVersions => Set<FixVersion>();
     public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.Entity<Release>().Property(r => r.ReleaseType).HasConversion<string>();
+
+        builder.Entity<RolePermission>()
+            .HasIndex(rp => new { rp.RoleName, rp.PermissionKey })
+            .IsUnique();
 
         builder.Entity<TaskItem>()
             .HasOne(t => t.Release)
