@@ -1,0 +1,21 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">mbm</div>
+      <div>
+        <div class="brand-name">MBM</div>
+        <div class="brand-caption">Minute By Minute</div>
+      </div>
+    </div>
+
+    <nav class="primary-nav" aria-label="Main navigation">
+      @for (item of navItems; track item.path) {
+        <a class="nav-item" [routerLink]="item.path" routerLinkActive="active">{{ item.label }}</a>
+      }
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

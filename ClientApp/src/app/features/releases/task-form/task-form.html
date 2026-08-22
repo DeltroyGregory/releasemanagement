@@ -1,0 +1,26 @@
+<div class="overlay-backdrop" (click)="cancel()">
+  <div class="overlay-panel" (click)="$event.stopPropagation()">
+    <h2 class="section-title">Add task</h2>
+    <form class="stack" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="task-title">Title</label>
+        <input id="task-title" type="text" [(ngModel)]="title" name="title" required />
+      </div>
+
+      <div class="field">
+        <label for="task-description">Description</label>
+        <textarea id="task-description" rows="3" [(ngModel)]="description" name="description"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="task-due">Due date</label>
+        <input id="task-due" type="date" [(ngModel)]="dueDate" name="dueDate" />
+      </div>
+
+      <div class="form-actions">
+        <button class="btn" type="submit" [disabled]="!title">Add task</button>
+        <button class="btn btn-secondary" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
