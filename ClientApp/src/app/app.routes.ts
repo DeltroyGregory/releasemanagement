@@ -5,7 +5,9 @@ import { Dashboard } from './features/dashboard/dashboard';
 import { ReleaseList } from './features/releases/release-list/release-list';
 import { ReleaseDetail } from './features/releases/release-detail/release-detail';
 import { ReleaseForm } from './features/releases/release-form/release-form';
-import { authGuard } from './auth/auth.guard';
+import { UserList } from './features/admin/users/user-list/user-list';
+import { PermissionsMatrix } from './features/admin/permissions/permissions-matrix';
+import { authGuard, adminGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -21,6 +23,8 @@ export const routes: Routes = [
       { path: 'releases/new', component: ReleaseForm },
       { path: 'releases/:id', component: ReleaseDetail },
       { path: 'releases/:id/edit', component: ReleaseForm },
+      { path: 'admin/users', component: UserList, canActivate: [adminGuard] },
+      { path: 'admin/permissions', component: PermissionsMatrix, canActivate: [adminGuard] },
     ],
   },
 ];

@@ -90,4 +90,33 @@ export interface User {
   id: string;
   email: string | null;
   userName: string | null;
+  role: string | null;
+  isActive: boolean;
+  createdAt: string;
+  lastLoginAt: string | null;
+}
+
+export interface UserInviteRequest {
+  email: string;
+  role: string;
+}
+
+export interface UserRoleUpdateRequest {
+  role: string;
+}
+
+export interface PermissionKey {
+  key: string;
+  area: string;
+  label: string;
+}
+
+export interface PermissionMatrix {
+  permissions: PermissionKey[];
+  roles: string[];
+  grants: Record<string, string[]>;
+}
+
+export interface PermissionMatrixUpdateRequest {
+  grants: Record<string, string[]>;
 }

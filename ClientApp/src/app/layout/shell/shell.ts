@@ -13,4 +13,9 @@ export class Shell {
     { label: 'My Releases', path: 'my-releases' },
     { label: 'Releases', path: 'releases' },
   ];
+
+  protected readonly adminNavItems = [
+    { label: 'Users', path: 'admin/users' },
+    { label: 'Permissions', path: 'admin/permissions' },
+  ];
 }

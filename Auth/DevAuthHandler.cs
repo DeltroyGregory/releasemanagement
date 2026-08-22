@@ -18,12 +18,13 @@ public class DevAuthHandler(
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        // No Role claim here — DbRoleClaimsTransformation adds it from the AspNetUserRoles table,
+        // so changing the dev-admin's role via Admin > Users actually takes effect locally too.
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, "dev-admin"),
             new Claim("preferred_username", "admin@rmp.local"),
             new Claim(ClaimTypes.Email, "admin@rmp.local"),
-            new Claim(ClaimTypes.Role, "Admin"),
         };
         var identity = new ClaimsIdentity(claims, SchemeName);
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName);

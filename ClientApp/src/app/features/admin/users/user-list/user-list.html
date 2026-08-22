@@ -1,0 +1,62 @@
+<div class="page-header">
+  <h1>Users</h1>
+  <button class="btn" type="button" (click)="showInviteForm.set(true)">+ Invite user</button>
+</div>
+
+<div class="card">
+  @if (users().length === 0) {
+    <div class="empty-state">No users yet.</div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Last login</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="avatar">{{ initials(user) }}</div>
+                <div>
+                  <div class="user-name">{{ user.userName }}</div>
+                  <div class="user-email">{{ user.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              @if (user.role) {
+                <span class="badge">{{ user.role }}</span>
+              } @else {
+                <span class="user-email">No role</span>
+              }
+            </td>
+            <td>
+              <div class="status">
+                <span class="status-dot" [class.active]="user.isActive" [class.inactive]="!user.isActive"></span>
+                {{ user.isActive ? 'Active' : 'Inactive' }}
+              </div>
+            </td>
+            <td>{{ user.lastLoginAt ? (user.lastLoginAt | date: 'medium') : 'Never' }}</td>
+            <td style="text-align: right">
+              <button class="btn-link" type="button" (click)="editingUser.set(user)">Edit role</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+@if (showInviteForm()) {
+  <app-invite-user-form [roles]="roles()" (invited)="onInvited()" (closed)="showInviteForm.set(false)" />
+}
+
+@if (editingUser(); as user) {
+  <app-role-edit-form [user]="user" [roles]="roles()" (saved)="onRoleSaved()" (closed)="editingUser.set(null)" />
+}

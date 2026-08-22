@@ -1,0 +1,47 @@
+@if (matrix(); as m) {
+  <div class="page-header">
+    <div>
+      <h1>Permissions</h1>
+      <p class="page-subtitle">Configure what each role can do across RMP.</p>
+    </div>
+    <button class="btn" type="button" (click)="save()">{{ saved() ? 'Saved' : 'Save changes' }}</button>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 34%">Permission</th>
+          @for (role of m.roles; track role) {
+            <th class="matrix-col">{{ role }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (group of groups(); track group.area) {
+          <tr class="matrix-group-row">
+            <td [attr.colspan]="m.roles.length + 1">{{ group.area }}</td>
+          </tr>
+          @for (perm of group.keys; track perm.key) {
+            <tr>
+              <td class="matrix-perm-name">{{ perm.label }}</td>
+              @for (role of m.roles; track role) {
+                <td class="matrix-cell">
+                  <span
+                    class="toggle"
+                    [class.on]="isGranted(role, perm.key) && role !== 'Admin'"
+                    [class.locked]="role === 'Admin'"
+                    (click)="toggle(role, perm.key)"
+                  >
+                    <span class="toggle-knob"></span>
+                  </span>
+                </td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+    <p class="matrix-footnote">Admin has full access to every permission and can't be restricted.</p>
+  </div>
+}
