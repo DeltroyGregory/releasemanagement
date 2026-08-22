@@ -1,17 +1,15 @@
 name: Deploy app (dev)
 
 on:
-  # Runs after Terraform (dev) succeeds on development, so infra exists before we deploy to it.
-  # Cross-workflow triggers can't consume another workflow's job outputs, so the resource names
-  # below are hardcoded to match .devops/terraform/dev.tfvars (they're deterministic — chosen
-  # names, not generated at apply time) rather than read from Terraform state.
-  workflow_run:
-    workflows: ["Terraform (dev)"]
-    types: [completed]
+  push:
     branches: [development]
-  # Also runnable on its own — e.g. to redeploy just the app without touching infra.
   workflow_dispatch: {}
 
+# Independent of terraform-dev.yml — runs on every push to development regardless of Terraform's
+# state. If infra isn't up yet, this will just fail at the SQL/App Service steps; re-run it once
+# terraform-dev has succeeded. The resource names below are hardcoded to match
+# .devops/terraform/dev.tfvars (they're deterministic — chosen names, not generated at apply
+# time) since there's no cross-workflow way to read Terraform outputs here.
 permissions:
   id-token: write
   contents: read
@@ -26,13 +24,10 @@ env:
 jobs:
   build-and-deploy:
     name: Build & deploy app
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment: dev
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || 'development' }}
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
