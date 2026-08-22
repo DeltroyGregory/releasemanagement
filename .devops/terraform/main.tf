@@ -38,6 +38,15 @@ resource "azurerm_mssql_server" "main" {
   minimum_tls_version          = "1.2"
   public_network_access_enabled = true
 
+  # Required for CREATE USER ... FROM EXTERNAL PROVIDER to resolve any principal other than the
+  # connecting AAD admin itself (e.g. the web app's managed identity, in the post-apply grant
+  # script) — the server needs its own identity to look principals up in Entra ID. That identity
+  # then needs the Directory Readers role, which Terraform can't grant itself (requires Privileged
+  # Role Administrator / Global Administrator) — see .devops/README.md for the one-time manual step.
+  identity {
+    type = "SystemAssigned"
+  }
+
   azuread_administrator {
     login_username              = var.sql_aad_admin_login
     object_id                   = var.deploy_principal_object_id

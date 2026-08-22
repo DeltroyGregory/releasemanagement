@@ -49,12 +49,14 @@ jobs:
             --start-ip-address "$RUNNER_IP" \
             --end-ip-address "$RUNNER_IP"
 
+      # azure/sql-action doesn't have a `sqlcmd-variables` input (that was silently ignored,
+      # leaving $(WebAppName) unresolved) — pass it through `arguments`, sqlcmd's own -v flag.
       - name: Grant the web app's managed identity DB access
         uses: azure/sql-action@v2.3
         with:
           connection-string: "Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Database=${{ env.SQL_DATABASE_NAME }};Authentication=Active Directory Default;Encrypt=True;"
           path: .devops/sql/grant-managed-identity.sql
-          sqlcmd-variables: WebAppName=${{ env.APP_SERVICE_NAME }}
+          arguments: -v WebAppName="${{ env.APP_SERVICE_NAME }}"
 
       - name: Remove temporary SQL firewall rule
         if: always()

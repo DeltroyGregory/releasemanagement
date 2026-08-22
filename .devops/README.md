@@ -19,6 +19,16 @@ See [bootstrap/README.md](bootstrap/README.md) for the exact one-time steps: cre
 
 Terraform authenticates to Azure via its own native OIDC support (`use_oidc = true` in `terraform/providers.tf`, fed by `ARM_CLIENT_ID`/`ARM_TENANT_ID`/`ARM_SUBSCRIPTION_ID`/`ARM_USE_OIDC` env vars on the `terraform` job) — **not** by reusing an `azure/login` CLI session. The azurerm provider explicitly refuses to authenticate through an Azure CLI session that was itself established as a service principal (only real interactive-user `az login` sessions work for CLI-based auth), so there's deliberately no `azure/login` step in the `terraform` job. `build-and-deploy` still uses `azure/login` — that's fine, because it runs raw `az` CLI commands directly rather than asking Terraform to borrow the session.
 
+## One-time manual step: Directory Readers for the SQL server's identity
+
+`CREATE USER ... FROM EXTERNAL PROVIDER` (what `sql/grant-managed-identity.sql` runs, to give the web app's managed identity DB access) can only resolve principals other than the connecting AAD admin if the SQL Server itself has a managed identity with the **Directory Readers** role in Entra ID. Without it, the grant script fails with `Msg 33134: Server identity is not configured` — the app then can't log into its own database at all (migrations fail on startup with a SQL login error).
+
+After running `terraform apply` (which gives the SQL server a system-assigned identity — `sql_server_identity_principal_id` in the outputs):
+
+1. Entra ID → **Roles and administrators** → search **Directory Readers** → Add assignments → select the SQL server's identity (search by the server name, e.g. `dg-use-nonprod-rmp-sql-01`) → Add.
+2. This needs a Privileged Role Administrator or Global Administrator — Terraform's OIDC identity doesn't have (and shouldn't have) rights to grant tenant-wide directory roles itself.
+3. Re-run `deploy-app-dev` afterward — its grant step will now actually resolve the web app's identity instead of failing on `$(WebAppName)` being unresolvable.
+
 ## Known things to double-check at first apply
 
 - `dotnet_version = "10.0"` in `terraform/main.tf`'s `application_stack` block — Azure App Service's supported Linux .NET runtime list may lag a very recent .NET release. If `terraform apply` rejects it, check `az webapp list-runtimes --os linux` and adjust.
