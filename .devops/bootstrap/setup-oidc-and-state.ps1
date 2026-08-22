@@ -22,7 +22,7 @@
 
 param(
     [string]$SubscriptionId = "f1face66-23ea-4977-925e-ba992cc94597",
-    [string]$Location = "eastus2",
+    [string]$Location = "centralus",
     [string]$GitHubOrg = "DeltroyGregory",
     [string]$GitHubRepo = "releasemanagement",
     [string]$GitHubEnvironment = "dev",

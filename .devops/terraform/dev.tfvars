@@ -1,5 +1,5 @@
 subscription_id      = "f1face66-23ea-4977-925e-ba992cc94597"
-location             = "eastus2"
+location             = "centralus"
 resource_group_name  = "dg-use-nonprod-rmp-01"
 app_service_name     = "dg-use-nonprod-rmp-app-01"
 sql_server_name      = "dg-use-nonprod-rmp-sql-01"
