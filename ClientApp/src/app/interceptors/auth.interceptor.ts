@@ -19,11 +19,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const instance = msalInstance;
   const account = instance.getActiveAccount() ?? instance.getAllAccounts()[0];
   if (!account) {
+    // Temporary diagnostic — remove once the post-login redirect is confirmed working.
+    console.log('[authInterceptor] no account for request:', req.url);
     return next(req);
   }
 
   return from(instance.acquireTokenSilent({ scopes: API_SCOPES, account })).pipe(
     catchError((error) => {
+      // Temporary diagnostic — remove once the post-login redirect is confirmed working.
+      console.error('[authInterceptor] acquireTokenSilent failed for', req.url, error);
       if (error instanceof InteractionRequiredAuthError) {
         instance.acquireTokenRedirect({ scopes: API_SCOPES, account });
       }

@@ -12,6 +12,8 @@ export const authGuard: CanActivateFn = () => {
   }
 
   const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
+  // Temporary diagnostic — remove once the post-login redirect is confirmed working.
+  console.log('[authGuard] account:', account, 'activeAccount:', msalInstance.getActiveAccount(), 'allAccounts:', msalInstance.getAllAccounts());
   return account ? true : inject(Router).createUrlTree(['/login']);
 };
 

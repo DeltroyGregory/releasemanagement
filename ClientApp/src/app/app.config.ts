@@ -16,9 +16,16 @@ async function initializeMsal(): Promise<void> {
   }
 
   await msalInstance.initialize();
-  const response = await msalInstance.handleRedirectPromise();
-  if (response?.account) {
-    msalInstance.setActiveAccount(response.account);
+
+  try {
+    const response = await msalInstance.handleRedirectPromise();
+    // Temporary diagnostic — remove once the post-login redirect is confirmed working.
+    console.log('[msal] handleRedirectPromise result:', response, 'activeAccount before:', msalInstance.getActiveAccount(), 'allAccounts:', msalInstance.getAllAccounts());
+    if (response?.account) {
+      msalInstance.setActiveAccount(response.account);
+    }
+  } catch (err) {
+    console.error('[msal] handleRedirectPromise threw:', err);
   }
 }
 
