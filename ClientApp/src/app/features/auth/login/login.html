@@ -1,0 +1,20 @@
+<div class="login-page">
+  <div class="login-card card">
+    <div class="brand">
+      <div class="brand-mark">rmp</div>
+      <div>
+        <div class="brand-name-dark">RMP</div>
+        <div class="brand-caption-dark">Release Management Platform</div>
+      </div>
+    </div>
+
+    <p class="login-tagline">Sign in to see your dashboard and assigned tasks.</p>
+
+    @if (isDevMode) {
+      <button class="btn" type="button" (click)="continueAsDevAdmin()">Continue as dev admin</button>
+      <p class="login-hint">No Azure AD app registration configured yet — using the local dev identity.</p>
+    } @else {
+      <button class="btn" type="button" (click)="signInWithMicrosoft()">Sign in with Microsoft</button>
+    }
+  </div>
+</div>

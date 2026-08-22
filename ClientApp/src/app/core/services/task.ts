@@ -10,6 +10,10 @@ export class TaskService {
     return this.http.get<TaskItem[]>(`/api/tasks?releaseId=${releaseId}`);
   }
 
+  listAll() {
+    return this.http.get<TaskItem[]>('/api/tasks');
+  }
+
   create(request: TaskItemCreateRequest) {
     return this.http.post<TaskItem>('/api/tasks', request);
   }

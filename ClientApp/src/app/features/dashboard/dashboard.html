@@ -1,0 +1,45 @@
+<div class="page-header">
+  <h1>Dashboard</h1>
+</div>
+
+<div class="stat-row">
+  <div class="card stat-card">
+    <div class="stat-value">{{ myReleaseCount() }}</div>
+    <div class="stat-label">My releases</div>
+  </div>
+  @for (sc of statusCounts(); track sc.status) {
+    <div class="card stat-card">
+      <div class="stat-value">{{ sc.count }}</div>
+      <div class="stat-label">{{ sc.status }}</div>
+    </div>
+  }
+</div>
+
+<div class="card" style="margin-top: 20px">
+  <h2 class="section-title">My assigned tasks</h2>
+
+  @if (myTasks().length === 0) {
+    <div class="empty-state">No tasks assigned to you.</div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Release</th>
+          <th>Status</th>
+          <th>Due date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of myTasks(); track task.id) {
+          <tr>
+            <td>{{ task.title }}</td>
+            <td><a class="table-link" [routerLink]="['/releases', task.releaseId]">{{ task.releaseName }}</a></td>
+            <td><span class="badge">{{ task.status }}</span></td>
+            <td>{{ task.dueDate ? (task.dueDate | date: 'mediumDate') : '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

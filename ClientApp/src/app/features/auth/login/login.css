@@ -1,0 +1,42 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.login-card {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.brand-name-dark {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.brand-caption-dark {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.login-tagline {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.login-card .btn {
+  width: 100%;
+  text-align: center;
+}
+
+.login-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}

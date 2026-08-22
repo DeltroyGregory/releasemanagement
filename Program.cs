@@ -1,5 +1,5 @@
-using mbm.Auth;
-using mbm.Data;
+using rmp.Auth;
+using rmp.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

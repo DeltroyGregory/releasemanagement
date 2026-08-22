@@ -1,4 +1,4 @@
-namespace mbm.Models;
+namespace rmp.Models;
 
 public enum ReleaseType
 {

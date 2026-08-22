@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace mbm.Models;
+namespace rmp.Models;
 
 [Table("Tasks")]
 public class TaskItem

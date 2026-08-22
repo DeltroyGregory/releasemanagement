@@ -1,4 +1,4 @@
-namespace mbm.DTOs;
+namespace rmp.DTOs;
 
 public record ReleaseDto(
     int Id,

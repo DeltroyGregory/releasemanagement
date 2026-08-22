@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using mbm.DTOs;
+using rmp.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace mbm.Controllers;
+namespace rmp.Controllers;
 
 [ApiController]
 [Route("api/auth")]

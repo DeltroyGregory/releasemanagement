@@ -1,4 +1,4 @@
-namespace mbm.DTOs;
+namespace rmp.DTOs;
 
 public record FixVersionDto(int Id, int ReleaseId, string Name, DateTime? StartDate, DateTime? EndDate, string? JiraFixVersionId);
 

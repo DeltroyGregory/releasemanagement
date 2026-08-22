@@ -9,6 +9,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class Shell {
   protected readonly navItems = [
+    { label: 'Dashboard', path: 'dashboard' },
     { label: 'My Releases', path: 'my-releases' },
     { label: 'Releases', path: 'releases' },
   ];

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace mbm.Data;
+namespace rmp.Data;
 
 public static class SeedRolesAndUsers
 {
@@ -19,18 +19,26 @@ public static class SeedRolesAndUsers
             }
         }
 
-        var adminPassword = Environment.GetEnvironmentVariable("SEED_ADMIN_PASSWORD");
-        if (string.IsNullOrEmpty(adminPassword))
-        {
-            return;
-        }
-
-        const string adminEmail = "admin@mbm.local";
-        var existing = await userManager.FindByEmailAsync(adminEmail);
+        // Id must match DevAuthHandler's NameIdentifier claim so tasks/releases assigned to "dev-admin"
+        // via the UI resolve back to this row (and so GET /api/users has someone to list in local dev).
+        const string devAdminId = "dev-admin";
+        const string adminEmail = "admin@rmp.local";
+        var existing = await userManager.FindByIdAsync(devAdminId);
         if (existing is null)
         {
-            var admin = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
-            var result = await userManager.CreateAsync(admin, adminPassword);
+            var admin = new IdentityUser
+            {
+                Id = devAdminId,
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true,
+            };
+
+            var adminPassword = Environment.GetEnvironmentVariable("SEED_ADMIN_PASSWORD");
+            var result = string.IsNullOrEmpty(adminPassword)
+                ? await userManager.CreateAsync(admin)
+                : await userManager.CreateAsync(admin, adminPassword);
+
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(admin, "Admin");

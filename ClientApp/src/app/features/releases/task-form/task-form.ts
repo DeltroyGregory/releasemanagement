@@ -1,7 +1,8 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from '../../../core/services/task';
-import { TaskItem } from '../../../core/models';
+import { UserService } from '../../../core/services/user';
+import { TaskItem, User } from '../../../core/models';
 
 @Component({
   imports: [FormsModule],
@@ -9,16 +10,24 @@ import { TaskItem } from '../../../core/models';
   styleUrl: './task-form.css',
   templateUrl: './task-form.html',
 })
-export class TaskForm {
+export class TaskForm implements OnInit {
   private readonly taskService = inject(TaskService);
+  private readonly userService = inject(UserService);
 
   readonly releaseId = input.required<number>();
   readonly created = output<TaskItem>();
   readonly closed = output<void>();
 
+  protected readonly users = signal<User[]>([]);
+
   protected title = '';
   protected description = '';
   protected dueDate = '';
+  protected assigneeUserId = '';
+
+  ngOnInit(): void {
+    this.userService.list().subscribe((users) => this.users.set(users));
+  }
 
   protected submit(): void {
     this.taskService
@@ -26,6 +35,7 @@ export class TaskForm {
         releaseId: this.releaseId(),
         title: this.title,
         description: this.description || null,
+        assigneeUserId: this.assigneeUserId || null,
         dueDate: this.dueDate ? new Date(this.dueDate).toISOString() : null,
       })
       .subscribe((task) => this.created.emit(task));

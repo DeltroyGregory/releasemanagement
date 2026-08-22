@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using mbm.Data;
+using rmp.Data;
 
 #nullable disable
 
-namespace mbm.Migrations
+namespace rmp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260822170111_InitialCreate")]
@@ -223,7 +223,7 @@ namespace mbm.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("mbm.Models.AppVersion", b =>
+            modelBuilder.Entity("rmp.Models.AppVersion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -247,7 +247,7 @@ namespace mbm.Migrations
                     b.ToTable("AppVersions");
                 });
 
-            modelBuilder.Entity("mbm.Models.Comment", b =>
+            modelBuilder.Entity("rmp.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -276,7 +276,7 @@ namespace mbm.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("mbm.Models.FixVersion", b =>
+            modelBuilder.Entity("rmp.Models.FixVersion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -307,7 +307,7 @@ namespace mbm.Migrations
                     b.ToTable("FixVersions");
                 });
 
-            modelBuilder.Entity("mbm.Models.Release", b =>
+            modelBuilder.Entity("rmp.Models.Release", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -344,7 +344,7 @@ namespace mbm.Migrations
                     b.ToTable("Releases");
                 });
 
-            modelBuilder.Entity("mbm.Models.ReleaseSystem", b =>
+            modelBuilder.Entity("rmp.Models.ReleaseSystem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -369,7 +369,7 @@ namespace mbm.Migrations
                     b.ToTable("ReleaseSystems");
                 });
 
-            modelBuilder.Entity("mbm.Models.TaskItem", b =>
+            modelBuilder.Entity("rmp.Models.TaskItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -458,9 +458,9 @@ namespace mbm.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("mbm.Models.Comment", b =>
+            modelBuilder.Entity("rmp.Models.Comment", b =>
                 {
-                    b.HasOne("mbm.Models.Release", "Release")
+                    b.HasOne("rmp.Models.Release", "Release")
                         .WithMany("Comments")
                         .HasForeignKey("ReleaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,9 +469,9 @@ namespace mbm.Migrations
                     b.Navigation("Release");
                 });
 
-            modelBuilder.Entity("mbm.Models.FixVersion", b =>
+            modelBuilder.Entity("rmp.Models.FixVersion", b =>
                 {
-                    b.HasOne("mbm.Models.Release", "Release")
+                    b.HasOne("rmp.Models.Release", "Release")
                         .WithMany("FixVersions")
                         .HasForeignKey("ReleaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -480,9 +480,9 @@ namespace mbm.Migrations
                     b.Navigation("Release");
                 });
 
-            modelBuilder.Entity("mbm.Models.ReleaseSystem", b =>
+            modelBuilder.Entity("rmp.Models.ReleaseSystem", b =>
                 {
-                    b.HasOne("mbm.Models.Release", "Release")
+                    b.HasOne("rmp.Models.Release", "Release")
                         .WithMany("ReleaseSystems")
                         .HasForeignKey("ReleaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -491,9 +491,9 @@ namespace mbm.Migrations
                     b.Navigation("Release");
                 });
 
-            modelBuilder.Entity("mbm.Models.TaskItem", b =>
+            modelBuilder.Entity("rmp.Models.TaskItem", b =>
                 {
-                    b.HasOne("mbm.Models.Release", "Release")
+                    b.HasOne("rmp.Models.Release", "Release")
                         .WithMany("Tasks")
                         .HasForeignKey("ReleaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -502,7 +502,7 @@ namespace mbm.Migrations
                     b.Navigation("Release");
                 });
 
-            modelBuilder.Entity("mbm.Models.Release", b =>
+            modelBuilder.Entity("rmp.Models.Release", b =>
                 {
                     b.Navigation("Comments");
 

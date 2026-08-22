@@ -32,6 +32,9 @@
             <div class="task-item">
               <strong>{{ task.title }}</strong>
               <span class="badge">{{ task.status }}</span>
+              @if (task.assigneeUserId) {
+                <span class="badge">{{ task.assigneeUserId }}</span>
+              }
               @if (task.description) {
                 <p>{{ task.description }}</p>
               }

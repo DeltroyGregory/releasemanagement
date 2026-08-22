@@ -17,6 +17,16 @@
         <input id="task-due" type="date" [(ngModel)]="dueDate" name="dueDate" />
       </div>
 
+      <div class="field">
+        <label for="task-assignee">Assignee</label>
+        <select id="task-assignee" [(ngModel)]="assigneeUserId" name="assigneeUserId">
+          <option value="">Unassigned</option>
+          @for (user of users(); track user.id) {
+            <option [value]="user.id">{{ user.email ?? user.userName ?? user.id }}</option>
+          }
+        </select>
+      </div>
+
       <div class="form-actions">
         <button class="btn" type="submit" [disabled]="!title">Add task</button>
         <button class="btn btn-secondary" type="button" (click)="cancel()">Cancel</button>
