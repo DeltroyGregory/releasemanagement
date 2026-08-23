@@ -58,6 +58,13 @@ jobs:
           path: .devops/sql/grant-managed-identity.sql
           arguments: -v WebAppName="${{ env.APP_SERVICE_NAME }}"
 
+      - name: Grant dtgregory@gmail.com db_owner (manual inspection/admin access)
+        uses: azure/sql-action@v2.3
+        with:
+          connection-string: "Server=tcp:${{ env.SQL_SERVER_NAME }}.database.windows.net,1433;Database=${{ env.SQL_DATABASE_NAME }};Authentication=Active Directory Default;Encrypt=True;"
+          path: .devops/sql/grant-admin-user.sql
+          arguments: -v AdminEmail="dtgregory@gmail.com"
+
       - name: Remove temporary SQL firewall rule
         if: always()
         run: |
@@ -103,3 +110,11 @@ jobs:
             --name "$APP_SERVICE_NAME" \
             --src-path app.zip \
             --type zip
+
+      # az webapp deploy usually restarts the app on its own, but force it explicitly so a stale
+      # worker process never lingers after a deploy.
+      - name: Restart Azure Web App
+        run: |
+          az webapp restart \
+            --resource-group "$RESOURCE_GROUP_NAME" \
+            --name "$APP_SERVICE_NAME"

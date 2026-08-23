@@ -139,6 +139,7 @@ resource "azurerm_linux_web_app" "main" {
     "ConnectionStrings__DefaultConnection" = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azurerm_mssql_database.main.name};Authentication=Active Directory Managed Identity;Encrypt=True;TrustServerCertificate=False;"
     APPLICATIONINSIGHTS_CONNECTION_STRING  = azurerm_application_insights.main.connection_string
     SEED_ADMIN_PASSWORD                    = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.seed_admin_password.versionless_id})"
+    BootstrapAdminEmail                    = var.bootstrap_admin_email
   }
 }
 

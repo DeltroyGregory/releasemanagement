@@ -5,6 +5,7 @@ Azure infrastructure (Terraform) and the deploy pipeline for RMP's `dev` environ
 - **`bootstrap/`** — one-time setup (Terraform remote state + GitHub Actions OIDC identity). Run this first — see [bootstrap/README.md](bootstrap/README.md). Not run by the pipeline itself.
 - **`terraform/`** — the actual infrastructure: resource group `dg-use-nonprod-rmp-01`, a Linux App Service (`.NET 10`, system-assigned managed identity), an Azure SQL server/database (Microsoft Entra-only auth — no SQL password ever exists), a Key Vault, and Log Analytics + Application Insights. Flat structure on purpose (no modules) — this is a single environment; modules are worth extracting once `prod` exists.
 - **`sql/grant-managed-identity.sql`** — idempotent script the pipeline runs after every `terraform apply`, granting the web app's managed identity access to its own database (AAD auth only, run by the pipeline's own OIDC identity as the SQL AAD admin).
+- **`sql/grant-admin-user.sql`** — idempotent, grants a specific human Entra ID account (currently `dtgregory@gmail.com`, hardcoded in the workflow step) `db_owner` for manual inspection — since the SQL server can only have one AAD admin (the deploy service principal), this is how anyone else gets direct DB access at all.
 
 The pipeline is two separate GitHub Actions workflows (not Azure Pipelines, despite the folder name — chosen because the repo already lives on GitHub), decoupled so either can be re-run independently:
 
@@ -28,6 +29,10 @@ After running `terraform apply` (which gives the SQL server a system-assigned id
 1. Entra ID → **Roles and administrators** → search **Directory Readers** → Add assignments → select the SQL server's identity (search by the server name, e.g. `dg-use-nonprod-rmp-sql-01`) → Add.
 2. This needs a Privileged Role Administrator or Global Administrator — Terraform's OIDC identity doesn't have (and shouldn't have) rights to grant tenant-wide directory roles itself.
 3. Re-run `deploy-app-dev` afterward — its grant step will now actually resolve the web app's identity instead of failing on `$(WebAppName)` being unresolvable.
+
+## Bootstrapping the first Admin
+
+Anyone signing in via real Azure AD for the first time gets JIT-provisioned as `Reader` (see `Auth/JitUserProvisioning.cs`) — there's no seeded admin in that flow, only the local `DevAuthHandler` dev-mode one. `bootstrap_admin_email` in `dev.tfvars` (→ the `BootstrapAdminEmail` app setting) names the one address that gets promoted to Admin automatically, checked on every request so it also fixes an account that was already provisioned as Reader before this was set. Must exactly match the email/UPN used at the "Sign in with Microsoft" prompt, which can differ from an Azure Portal/SQL admin identity.
 
 ## Known things to double-check at first apply
 

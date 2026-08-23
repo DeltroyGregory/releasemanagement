@@ -15,3 +15,7 @@ deploy_principal_object_id = "03382cf0-bb91-4856-bad0-253ac9ffae08"
 azure_ad_tenant_id = "f36628fb-a459-4a87-a3bf-ea3aede4d7eb"
 azure_ad_client_id = "49eb83bf-411b-4ab6-bda2-c7afe12f41b0"
 azure_ad_audience  = "api://49eb83bf-411b-4ab6-bda2-c7afe12f41b0"
+
+# Promoted to Admin on sign-in by JitUserProvisioning — must match the exact email/UPN you sign in
+# with via "Sign in with Microsoft", which may differ from your Azure Portal/SQL admin identity.
+bootstrap_admin_email = "dtgregory@gmail.com"

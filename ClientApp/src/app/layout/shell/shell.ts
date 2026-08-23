@@ -17,5 +17,6 @@ export class Shell {
   protected readonly adminNavItems = [
     { label: 'Users', path: 'admin/users' },
     { label: 'Permissions', path: 'admin/permissions' },
+    { label: 'Task Fields', path: 'admin/task-fields' },
   ];
 }

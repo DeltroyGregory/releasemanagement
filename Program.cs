@@ -84,6 +84,15 @@ using (var scope = app.Services.CreateScope())
     {
         app.Logger.LogError(ex, "Permission seeding failed");
     }
+
+    try
+    {
+        await SeedLookups.RunAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Lookup seeding failed");
+    }
 }
 
 app.UseHttpsRedirection();

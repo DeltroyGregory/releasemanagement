@@ -7,6 +7,7 @@ import { ReleaseDetail } from './features/releases/release-detail/release-detail
 import { ReleaseForm } from './features/releases/release-form/release-form';
 import { UserList } from './features/admin/users/user-list/user-list';
 import { PermissionsMatrix } from './features/admin/permissions/permissions-matrix';
+import { TaskFields } from './features/admin/task-fields/task-fields';
 import { authGuard, adminGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
@@ -25,6 +26,7 @@ export const routes: Routes = [
       { path: 'releases/:id/edit', component: ReleaseForm },
       { path: 'admin/users', component: UserList, canActivate: [adminGuard] },
       { path: 'admin/permissions', component: PermissionsMatrix, canActivate: [adminGuard] },
+      { path: 'admin/task-fields', component: TaskFields, canActivate: [adminGuard] },
     ],
   },
 ];
