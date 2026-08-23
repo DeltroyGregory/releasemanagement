@@ -110,3 +110,11 @@ jobs:
             --name "$APP_SERVICE_NAME" \
             --src-path app.zip \
             --type zip
+
+      # az webapp deploy usually restarts the app on its own, but force it explicitly so a stale
+      # worker process never lingers after a deploy.
+      - name: Restart Azure Web App
+        run: |
+          az webapp restart \
+            --resource-group "$RESOURCE_GROUP_NAME" \
+            --name "$APP_SERVICE_NAME"
