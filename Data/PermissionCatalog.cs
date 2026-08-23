@@ -8,6 +8,7 @@ public record PermissionKey(string Key, string Area, string Label);
 /// </summary>
 public static class PermissionCatalog
 {
+    public const string Admin = "Admin";
     public const string ReleaseCoordinator = "Release Coordinator";
     public const string PowerUser = "Power User";
     public const string Reader = "Reader";

@@ -30,6 +30,10 @@ After running `terraform apply` (which gives the SQL server a system-assigned id
 2. This needs a Privileged Role Administrator or Global Administrator — Terraform's OIDC identity doesn't have (and shouldn't have) rights to grant tenant-wide directory roles itself.
 3. Re-run `deploy-app-dev` afterward — its grant step will now actually resolve the web app's identity instead of failing on `$(WebAppName)` being unresolvable.
 
+## Bootstrapping the first Admin
+
+Anyone signing in via real Azure AD for the first time gets JIT-provisioned as `Reader` (see `Auth/JitUserProvisioning.cs`) — there's no seeded admin in that flow, only the local `DevAuthHandler` dev-mode one. `bootstrap_admin_email` in `dev.tfvars` (→ the `BootstrapAdminEmail` app setting) names the one address that gets promoted to Admin automatically, checked on every request so it also fixes an account that was already provisioned as Reader before this was set. Must exactly match the email/UPN used at the "Sign in with Microsoft" prompt, which can differ from an Azure Portal/SQL admin identity.
+
 ## Known things to double-check at first apply
 
 - `dotnet_version = "10.0"` in `terraform/main.tf`'s `application_stack` block — Azure App Service's supported Linux .NET runtime list may lag a very recent .NET release. If `terraform apply` rejects it, check `az webapp list-runtimes --os linux` and adjust.

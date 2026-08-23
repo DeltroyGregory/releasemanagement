@@ -75,3 +75,9 @@ variable "azure_ad_audience" {
   type    = string
   default = ""
 }
+
+variable "bootstrap_admin_email" {
+  description = "Email address that JitUserProvisioning promotes to Admin on sign-in (checked every request, not just first login) — solves the chicken-and-egg problem of nobody being Admin yet in a fresh Azure AD environment."
+  type        = string
+  default     = ""
+}
