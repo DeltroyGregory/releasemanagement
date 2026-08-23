@@ -46,7 +46,7 @@ export class Dashboard implements OnInit {
         const assigned = tasks
           .filter((t) => t.assigneeUserId === me.userId)
           .map((t) => ({ ...t, releaseName: releaseNames.get(t.releaseId) ?? `#${t.releaseId}` }))
-          .sort((a, b) => (a.dueDate ?? '9999').localeCompare(b.dueDate ?? '9999'));
+          .sort((a, b) => (a.endDate ?? '9999').localeCompare(b.endDate ?? '9999'));
         this.myTasks.set(assigned);
 
         const myReleases = releases.filter((r) => r.createdByUserId === me.userId);

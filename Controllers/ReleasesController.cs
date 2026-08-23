@@ -29,7 +29,10 @@ public class ReleasesController(AppDbContext db) : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var release = await db.Releases
-            .Include(r => r.Tasks)
+            .Include(r => r.Tasks).ThenInclude(t => t.Type)
+            .Include(r => r.Tasks).ThenInclude(t => t.Component)
+            .Include(r => r.Tasks).ThenInclude(t => t.AppName)
+            .Include(r => r.Tasks).ThenInclude(t => t.Version)
             .Include(r => r.ReleaseSystems)
             .Include(r => r.FixVersions)
             .Include(r => r.Comments)
@@ -110,9 +113,7 @@ public class ReleasesController(AppDbContext db) : ControllerBase
     private static ReleaseDetailDto ToDetailDto(Release r) =>
         new(
             r.Id, r.Name, r.Description, r.ReleaseType.ToString(), r.Status, r.TargetDate, r.CreatedAt, r.CreatedByUserId,
-            r.Tasks.OrderByDescending(t => t.CreatedAt)
-                .Select(t => new TaskItemDto(t.Id, t.ReleaseId, t.Title, t.Description, t.Status, t.AssigneeUserId, t.DueDate, t.CreatedAt))
-                .ToList(),
+            r.Tasks.OrderByDescending(t => t.CreatedAt).Select(TasksController.ToDto).ToList(),
             r.ReleaseSystems.Select(rs => new ReleaseSystemDto(rs.Id, rs.ReleaseId, rs.SystemName, rs.Notes)).ToList(),
             r.FixVersions.Select(f => new FixVersionDto(f.Id, f.ReleaseId, f.Name, f.StartDate, f.EndDate, f.JiraFixVersionId)).ToList(),
             r.Comments.OrderByDescending(c => c.CreatedAt)

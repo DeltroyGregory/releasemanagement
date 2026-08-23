@@ -30,13 +30,36 @@
         } @else {
           @for (task of r.tasks; track task.id) {
             <div class="task-item">
+              <span class="user-email">{{ task.taskNumber }}</span>
               <strong>{{ task.title }}</strong>
               <span class="badge">{{ task.status }}</span>
+              @if (task.typeName) {
+                <span class="badge">{{ task.typeName }}</span>
+              }
+              @if (task.componentName) {
+                <span class="badge">{{ task.componentName }}</span>
+              }
+              @if (task.appNameValue) {
+                <span class="badge">{{ task.appNameValue }}</span>
+              }
+              @if (task.versionValue) {
+                <span class="badge">{{ task.versionValue }}</span>
+              }
               @if (task.assigneeUserId) {
                 <span class="badge">{{ task.assigneeUserId }}</span>
               }
               @if (task.description) {
                 <p>{{ task.description }}</p>
+              }
+              @if (task.startDate || task.endDate) {
+                <div class="detail-meta" style="margin: 4px 0 0">
+                  @if (task.startDate) {
+                    <span>Start: {{ task.startDate | date: 'medium' }}</span>
+                  }
+                  @if (task.endDate) {
+                    <span>End: {{ task.endDate | date: 'medium' }}</span>
+                  }
+                </div>
               }
             </div>
           }

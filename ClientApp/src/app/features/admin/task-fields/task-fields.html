@@ -1,0 +1,46 @@
+<div class="page-header">
+  <h1>Task Fields</h1>
+</div>
+
+<div class="tab-row">
+  @for (tab of tabs; track tab.category) {
+    <button class="tab" type="button" [class.active]="selected() === tab.category" (click)="selectCategory(tab.category)">
+      {{ tab.label }}
+    </button>
+  }
+</div>
+
+<div class="card">
+  <form class="stack" style="flex-direction: row; max-width: none; align-items: flex-end" (ngSubmit)="add()">
+    <div class="field" style="flex: 1; margin-bottom: 0">
+      <label for="new-value">Add {{ selected() }} value</label>
+      <input id="new-value" type="text" [(ngModel)]="newValue" name="newValue" required />
+    </div>
+    <button class="btn" type="submit" [disabled]="!newValue.trim()">Add</button>
+  </form>
+
+  @if (error) {
+    <div style="color: var(--danger); font-size: 13px; margin-top: 10px;">{{ error }}</div>
+  }
+
+  <table style="margin-top: 16px">
+    @if (items().length === 0) {
+      <tbody>
+        <tr>
+          <td class="empty-state" colspan="2">No values yet.</td>
+        </tr>
+      </tbody>
+    } @else {
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr>
+            <td>{{ item.value }}</td>
+            <td style="text-align: right">
+              <button class="btn-link" type="button" (click)="remove(item)">Remove</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    }
+  </table>
+</div>

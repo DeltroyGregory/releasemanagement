@@ -12,9 +12,70 @@
         <textarea id="task-description" rows="3" [(ngModel)]="description" name="description"></textarea>
       </div>
 
-      <div class="field">
-        <label for="task-due">Due date</label>
-        <input id="task-due" type="date" [(ngModel)]="dueDate" name="dueDate" />
+      <div class="field-row">
+        <div class="field">
+          <label for="task-type">Type</label>
+          <select id="task-type" [(ngModel)]="typeId" name="typeId">
+            <option value="">—</option>
+            @for (t of types(); track t.id) {
+              <option [value]="t.id">{{ t.value }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="task-component">Component</label>
+          <select id="task-component" [(ngModel)]="componentId" name="componentId">
+            <option value="">—</option>
+            @for (c of components(); track c.id) {
+              <option [value]="c.id">{{ c.value }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="task-app-name">App name</label>
+          <select id="task-app-name" [(ngModel)]="appNameId" name="appNameId">
+            <option value="">—</option>
+            @for (a of appNames(); track a.id) {
+              <option [value]="a.id">{{ a.value }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="task-version">Version</label>
+          <select id="task-version" [(ngModel)]="versionId" name="versionId">
+            <option value="">—</option>
+            @for (v of versions(); track v.id) {
+              <option [value]="v.id">{{ v.value }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="task-start-date">Start date</label>
+          <input id="task-start-date" type="date" [(ngModel)]="startDate" name="startDate" />
+        </div>
+        <div class="field">
+          <label for="task-start-time">Start time</label>
+          <input id="task-start-time" type="time" [(ngModel)]="startTime" name="startTime" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="task-end-date">End date</label>
+          <input id="task-end-date" type="date" [(ngModel)]="endDate" name="endDate" />
+        </div>
+        <div class="field">
+          <label for="task-end-time">End time</label>
+          <input id="task-end-time" type="time" [(ngModel)]="endTime" name="endTime" />
+        </div>
       </div>
 
       <div class="field">

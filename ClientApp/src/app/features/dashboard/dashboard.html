@@ -27,16 +27,16 @@
           <th>Task</th>
           <th>Release</th>
           <th>Status</th>
-          <th>Due date</th>
+          <th>End date</th>
         </tr>
       </thead>
       <tbody>
         @for (task of myTasks(); track task.id) {
           <tr>
-            <td>{{ task.title }}</td>
+            <td>{{ task.taskNumber }} — {{ task.title }}</td>
             <td><a class="table-link" [routerLink]="['/releases', task.releaseId]">{{ task.releaseName }}</a></td>
             <td><span class="badge">{{ task.status }}</span></td>
-            <td>{{ task.dueDate ? (task.dueDate | date: 'mediumDate') : '—' }}</td>
+            <td>{{ task.endDate ? (task.endDate | date: 'mediumDate') : '—' }}</td>
           </tr>
         }
       </tbody>

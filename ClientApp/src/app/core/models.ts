@@ -31,13 +31,23 @@ export interface ReleaseUpdateRequest extends ReleaseCreateRequest {
 
 export interface TaskItem {
   id: number;
+  taskNumber: string;
   releaseId: number;
   title: string;
   description: string | null;
   status: string;
   assigneeUserId: string | null;
-  dueDate: string | null;
+  startDate: string | null;
+  endDate: string | null;
   createdAt: string;
+  typeId: number | null;
+  typeName: string | null;
+  componentId: number | null;
+  componentName: string | null;
+  appNameId: number | null;
+  appNameValue: string | null;
+  versionId: number | null;
+  versionValue: string | null;
 }
 
 export interface TaskItemCreateRequest {
@@ -45,7 +55,12 @@ export interface TaskItemCreateRequest {
   title: string;
   description?: string | null;
   assigneeUserId?: string | null;
-  dueDate?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  typeId?: number | null;
+  componentId?: number | null;
+  appNameId?: number | null;
+  versionId?: number | null;
 }
 
 export interface ReleaseSystem {
@@ -119,4 +134,21 @@ export interface PermissionMatrix {
 
 export interface PermissionMatrixUpdateRequest {
   grants: Record<string, string[]>;
+}
+
+export type LookupCategory = 'TaskType' | 'Component' | 'AppName' | 'Version';
+
+export interface LookupItem {
+  id: number;
+  category: LookupCategory;
+  value: string;
+}
+
+export interface LookupItemCreateRequest {
+  category: LookupCategory;
+  value: string;
+}
+
+export interface LookupItemUpdateRequest {
+  value: string;
 }
